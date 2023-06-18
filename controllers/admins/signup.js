@@ -1,4 +1,4 @@
-const { User, joiRegisterSchema } = require('../../models/admin');
+const { Admin, joiRegisterSchema } = require('../../models/admin');
 const { BadRequest, Conflict } = require('http-errors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -12,8 +12,8 @@ const signup = async (req, res, next) => {
       throw new BadRequest(error.message);
     }
     const { name, email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (user) {
+    const admin = await Admin.findOne({ email });
+    if (admin) {
       throw new Conflict('Email in use');
     }
     const salt = await bcrypt.genSalt(10);
@@ -23,7 +23,7 @@ const signup = async (req, res, next) => {
       id,
     };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
-    const newUser = await User.create({
+    const newUser = await Admin.create({
       name,
       email,
       password: hashPassword,
@@ -31,10 +31,9 @@ const signup = async (req, res, next) => {
     });
     res.status(201).json({
       token: newUser.token,
-      user: {
+      admin: {
         name: newUser.name,
         email: newUser.email,
-        balance: newUser.balance,
       },
     });
   } catch (error) {

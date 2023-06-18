@@ -8,9 +8,9 @@ const router = express.Router();
 
 router.get('/', ctrl.getAll);
 
-router.get('/', authenticate ,ctrl.getAllByCreator);
+router.get('/all/:id', authenticate ,ctrl.getAllByCreator);
 
-router.post('/create', authenticate, ctrl.create);
+router.post('/create/:creatorId', authenticate, ctrl.create);
 
 router.put('/update/:id', authenticate, ctrl.updateById);
 

@@ -9,11 +9,11 @@ const create = async (req, res, next) => {
     if (error) {
       throw res.status(400).json(error.message);
     }
-    const { _id } = req.admin;
+    const { creatorId } = req.params;
   
     const newTrain = await Train.create({
       ...req.body,
-      creator: _id,
+      creator: creatorId,
     });
 
     res.status(201).json(newTrain);

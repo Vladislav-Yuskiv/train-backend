@@ -1,4 +1,4 @@
-const { User, joiLoginSchema } = require('../../models/admin');
+const { Admin, joiLoginSchema } = require('../../models/admin');
 const { BadRequest, Unauthorized } = require('http-errors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -11,26 +11,26 @@ const login = async (req, res, next) => {
       throw new BadRequest(error.message);
     }
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
       throw new Unauthorized('Email does not exist or Password is wrong');
     }
-    const passwordCompare = await bcrypt.compare(password, user.password);
+    const passwordCompare = await bcrypt.compare(password, admin.password);
 
     if (!passwordCompare) {
       throw new Unauthorized('Email does not exist or Password is wrong');
     }
 
-    const { _id, name, balance } = user;
+    const { _id, name } = admin;
     const payload = {
       id: _id,
     };
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
-    await User.findByIdAndUpdate(_id, { token });
+    await Admin.findByIdAndUpdate(_id, { token });
     res.json({
       token,
-      user: { email, name, balance },
+      admin: { email, name },
     });
   } catch (error) {
     next(error);
